@@ -1,0 +1,44 @@
+services:
+  kafka:
+    image: 'bitnami/kafka:latest'
+    ports:
+      - '9093:9093'
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:29093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:29093,EXTERNAL://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9093
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          '/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list || exit 1',
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - orders-network
+
+  kafka-setup:
+    image: 'bitnami/kafka:latest'
+    depends_on:
+      kafka:
+        condition: service_healthy
+    volumes:
+      - ./create-topic.sh:/create-topic.sh
+    command: ['/bin/bash', '/create-topic.sh']
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    networks:
+      - orders-network
+
+networks:
+  orders-network:
+    driver: bridge

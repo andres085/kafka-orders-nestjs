@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/kafka-orders-monorepo/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/kafka-orders-monorepo/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/kafka-orders-monorepo",
+  "projects": {
+    "consumer": {
+      "type": "application",
+      "root": "apps/consumer",
+      "entryFile": "main",
+      "sourceRoot": "apps/consumer/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/consumer/tsconfig.app.json"
+      }
+    },
+    "kafka-orders-monorepo": {
+      "type": "application",
+      "root": "apps/kafka-orders-monorepo",
+      "entryFile": "main",
+      "sourceRoot": "apps/kafka-orders-monorepo/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/kafka-orders-monorepo/tsconfig.app.json"
+      }
+    },
+    "orders-api": {
+      "type": "application",
+      "root": "apps/orders-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/orders-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/orders-api/tsconfig.app.json"
+      }
+    },
+    "producer": {
+      "type": "application",
+      "root": "apps/producer",
+      "entryFile": "main",
+      "sourceRoot": "apps/producer/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/producer/tsconfig.app.json"
+      }
+    }
+  }
+}
