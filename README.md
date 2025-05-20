@@ -1,98 +1,248 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Kafka Orders Microservices System
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This project demonstrates a microservices architecture using NestJS and Kafka for event-driven communication. The system consists of three separate services that work together to process orders.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## System Architecture
 
-## Description
+The system is built as a NestJS monorepo with three applications:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+1. **Producer** - Accepts HTTP requests to create orders and publishes them to Kafka
+2. **Consumer** - Subscribes to Kafka topics and processes incoming order messages
+3. **Orders API** - Stores orders in memory and provides REST endpoints to query orders and statistics
 
-## Project setup
+### Flow of Data
 
-```bash
-$ yarn install
-```
+1. Client sends a POST request to the Producer service to create an order
+2. Producer publishes the order as a message to the Kafka "orders-topic"
+3. Consumer listens to the "orders-topic" and processes incoming messages
+4. Consumer forwards processed orders to the Orders API
+5. Orders API stores the order in memory and updates order statistics
+6. Client can query orders and statistics through the Orders API endpoints
 
-## Compile and run the project
+## Prerequisites
+
+- Node.js (v14 or later)
+- npm or yarn
+- Docker and Docker Compose (for Kafka)
+
+## Getting Started
+
+### 1. Clone the repository
 
 ```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+git clone <repository-url>
+cd kafka-orders-monorepo
 ```
 
-## Run tests
+### 2. Install dependencies
 
 ```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+npm install
 ```
 
-## Deployment
+### 3. Start Kafka using Docker Compose
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Start the Kafka services:
 
 ```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
+docker compose up -d
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 4. Start all microservices
 
-## Resources
+```bash
+# Start all services in development mode
+npm run start:all
 
-Check out a few resources that may come in handy when working with NestJS:
+# Or start each service individually
+npm run start:dev:producer
+npm run start:dev:consumer
+npm run start:dev:orders-api
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+The services will be available at:
 
-## Support
+- Producer: http://localhost:3001
+- Orders API: http://localhost:3003
+- Consumer: (No HTTP endpoint, runs as a Kafka consumer)
+- Kafka UI: http://localhost:8080 (for monitoring Kafka)
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Service Endpoints
 
-## Stay in touch
+### Producer Service (port 3001)
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+| Method | Endpoint | Description                             |
+| ------ | -------- | --------------------------------------- |
+| POST   | /orders  | Create a new order and send it to Kafka |
 
-## License
+#### Example: Create a new order
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+curl -X POST http://localhost:3001/orders \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userId": "user123",
+    "products": [
+      { "id": "prod-1", "name": "Product 1", "price": 19.99, "quantity": 2 }
+    ],
+    "totalAmount": 39.98
+  }'
+```
+
+### Orders API (port 3003)
+
+| Method | Endpoint      | Description                     |
+| ------ | ------------- | ------------------------------- |
+| GET    | /orders       | Retrieve all orders             |
+| GET    | /orders/:id   | Retrieve a specific order by ID |
+| GET    | /orders/stats | Get order statistics            |
+| PATCH  | /orders/:id   | Update an existing order        |
+| DELETE | /orders/:id   | Delete an order                 |
+
+#### Example: Get all orders
+
+```bash
+curl -X GET http://localhost:3003/orders
+```
+
+#### Example: Get order statistics
+
+```bash
+curl -X GET http://localhost:3003/orders/stats
+```
+
+#### Example: Update an order
+
+```bash
+curl -X PATCH http://localhost:3003/orders/order-1234567890 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "status": "shipped"
+  }'
+```
+
+#### Example: Delete an order
+
+```bash
+curl -X DELETE http://localhost:3003/orders/order-1234567890
+```
+
+## Testing the Complete Flow
+
+1. Create an order through the Producer:
+
+```bash
+curl -X POST http://localhost:3001/orders \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userId": "user123",
+    "products": [
+      { "id": "prod-1", "name": "Product 1", "price": 19.99, "quantity": 2 }
+    ],
+    "totalAmount": 39.98
+  }'
+```
+
+2. Check that the Consumer processed the message (check console logs)
+
+3. Verify the order was stored in the Orders API:
+
+```bash
+curl -X GET http://localhost:3003/orders
+```
+
+4. Check the updated order statistics:
+
+```bash
+curl -X GET http://localhost:3003/orders/stats
+```
+
+## Monitoring Kafka
+
+You can monitor Kafka topics, messages, and consumers using the Kafka UI available at http://localhost:8080.
+
+## Development
+
+### Adding a New Microservice
+
+```bash
+# Generate a new app in the monorepo
+nest generate app new-service
+```
+
+### Project Structure
+
+```
+kafka-orders-monorepo/
+├── apps/
+│   ├── producer/
+│   │   └── src/
+│   │       ├── kafka/
+│   │       ├── orders/
+│   │       ├── main.ts
+│   │       └── producer.module.ts
+│   ├── consumer/
+│   │   └── src/
+│   │       ├── orders-consumer/
+│   │       ├── http-client/
+│   │       ├── main.ts
+│   │       └── consumer.module.ts
+│   └── orders-api/
+│       └── src/
+│           ├── orders/
+│           ├── main.ts
+│           └── orders-api.module.ts
+├── docker-compose.yml
+├── nest-cli.json
+├── package.json
+└── README.md
+```
+
+## Understanding the Message Patterns
+
+### Event-based (Fire and Forget)
+
+The current implementation uses the event-based pattern with `emit()`:
+
+```typescript
+await kafkaService.emit('orders-topic', order);
+```
+
+The producer sends a message and doesn't wait for a response.
+
+### Request-Response
+
+If you need a response from the consumer, you can use the `send()` method instead:
+
+```typescript
+const response = await kafkaService.send('orders-topic', order);
+```
+
+For this to work, the consumer must return a value and the producer must subscribe to response topics:
+
+```typescript
+// Producer setup
+async onModuleInit() {
+  this.kafkaClient.subscribeToResponseOf('orders-topic');
+  await this.kafkaClient.connect();
+}
+
+// Consumer handler
+@MessagePattern('orders-topic')
+handleOrderCreated(data) {
+  // Process order
+  return { success: true, orderId: data.id };
+}
+```
+
+## Shutting Down
+
+To stop all services:
+
+```bash
+# Stop NestJS applications
+Ctrl+C (if running in terminal)
+
+# Stop Kafka and related services
+docker-compose down
+```
