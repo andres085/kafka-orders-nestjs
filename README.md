@@ -244,5 +244,5 @@ To stop all services:
 Ctrl+C (if running in terminal)
 
 # Stop Kafka and related services
-docker-compose down
+docker compose down
 ```
