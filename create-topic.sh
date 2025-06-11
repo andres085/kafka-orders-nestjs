@@ -7,7 +7,8 @@ KAFKA_BIN="/opt/bitnami/kafka/bin"
 # Define topics to create
 declare -A TOPICS
 TOPICS=(
-  ["orders-topic"]="partitions=1,replication=1"
+  ["orders-topic"]="partitions=1,replication=1",
+  ["analytics-topic"]="partitions=1,replication=1"
 )
 
 # Enable verbose mode for debugging
