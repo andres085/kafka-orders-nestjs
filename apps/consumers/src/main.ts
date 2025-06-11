@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { AnalyticsConsumerModule } from './analytics-consumers/src/analytics-consumer.module';
-import { OrdersConsumerModule } from './order-consumers/src/consumer.module';
+import { OrdersConsumerModule } from './order-consumers/src/orders-consumer.module';
 
 async function bootstrap() {
   console.log('Starting multiple Kafka consumers...');
