@@ -3,11 +3,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 @Injectable()
 export class OrdersService {
   private readonly orders: Map<string, any> = new Map();
+  private orderCounter = 0;
 
   create(order: any) {
-    order.id ??= `order-${Date.now()}`;
+    order.id ??= `order-${++this.orderCounter}`;
 
     this.orders.set(order.id, order);
+
     return order;
   }
 
@@ -50,7 +52,7 @@ export class OrdersService {
     return {
       totalOrders: this.orders.size,
       totalValue: Array.from(this.orders.values()).reduce(
-        (sum, order) => sum + (order.totalAmount ?? 0),
+        (sum, order) => sum + (order.price ?? 0),
         0,
       ),
     };
